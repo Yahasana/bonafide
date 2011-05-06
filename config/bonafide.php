@@ -42,5 +42,41 @@ return array(
 			// // legacy (v3.0) Auth module hashing
 			// 'legacy' => array('legacy'),
 		),
+
+		// ACL config
+		//'acl' => array(
+
+        //    'resource' => array(
+        //        'post'      => array('create', 'publish', 'delete', 'edit', 'view'),
+        //        'comment'   => array('create', 'approve', 'delete', 'view'),
+        //    ),
+
+        //    'role' => array(
+        //        'administrator' => array(
+                   // Allow to do anything
+        //           'resource'  => array()
+        //        ),
+        //        'standard'      => array(
+        //            'resource'  => array(
+        //                'post'      => array('create', 'approve', 'delete', 'view'),
+        //                'comment'   => array('create', 'approve', 'delete', 'view'),
+        //            )
+        //        ),
+        //        'namager'      => array(
+                    // resource with inherits
+        //            'parent'    => array('standard'),
+        //            'resource'  => array(
+        //                'post'      => array('export'),
+        //                'comment'   => array('report'),
+        //            )
+        //        ),
+        //        'guest'         => array(
+        //            'resource'  => array(
+        //                'post'      => array('view'),
+        //                'comment'   => array('view'),
+        //            )
+        //        ),
+        //    ),
+        //),
 	),
 );

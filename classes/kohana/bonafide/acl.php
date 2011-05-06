@@ -92,6 +92,48 @@ abstract class Kohana_Bonafide_ACL {
 	/**
 	 * Load configuration parameters.
 	 *
+	 *      // Configuration array
+	 *      $config = array(
+     *
+     *          'resource' => array(
+     *              'post'      => array('create', 'publish', 'delete', 'edit', 'view'),
+     *              'comment'   => array('create', 'approve', 'delete', 'view'),
+     *          ),
+     *
+     *          'role' => array(
+     *              'administrator' => array(
+     *                  // Allow to do anything
+     *                  'resource'  => array()
+     *              ),
+     *              'standard'      => array(
+     *                  'resource'  => array(
+     *                      'post'      => array('create', 'approve', 'delete', 'view'),
+     *                      'comment'   => array('create', 'approve', 'delete', 'view'),
+     *                  )
+     *              ),
+     *              'namager'      => array(
+     *                  // resource with inherits
+     *                  'parent'    => array('standard'),
+     *                  'resource'  => array(
+     *                      'post'      => array('export'),
+     *                      'comment'   => array('report'),
+     *                  )
+     *              ),
+     *              'guest'         => array(
+     *                  'resource'  => array(
+     *                      'post'      => array('view'),
+     *                      'comment'   => array('view'),
+     *                  )
+     *              ),
+     *          )
+     *      );
+	 *
+	 *     // Add a "member" role that inherits from "guest"
+	 *     $acl->role('member', 'guest');
+	 *
+	 *     // Add a "admin" role
+	 *     $acl->role('admin');
+	 *
 	 *     $acl = new Bonafide_ACL($config);
 	 *
 	 * @param   array  configuration
@@ -99,7 +141,52 @@ abstract class Kohana_Bonafide_ACL {
 	 */
 	public function __construct(array $config = NULL)
 	{
-		// Nothing, yet
+		if(isset($config[Bonafide_ACL::RESOURCE]))
+		{
+            foreach($config[Bonafide_ACL::RESOURCE] as $name => $actions)
+            {
+                $this->resource($name, $actions);
+            }
+		}
+
+		if(isset($config[Bonafide_ACL::ROLE]))
+		{
+            foreach($config[Bonafide_ACL::ROLE] as $role => $roles)
+            {
+                // Add new role
+                $this->role($role, isset($roles['parent']) ? $roles['parent'] : NULL);
+
+                if(empty($roles['resource']))
+                {
+                    // Allow to do anything
+                    $this->allow($role);
+                    continue;
+                }
+
+                foreach($roles['resource'] as $name => $actions)
+                {
+                    if(empty($actions))
+                    {
+                        // Allow to do anything on "$name"
+                        $this->allow($role, NULL, $name);
+                        continue;
+                    }
+
+                    foreach($actions as $key => $val)
+                    {
+                        // If no explicit allow option set, allow by default.
+                        if(is_int($key))
+                        {
+                            $this->allow($role, $val, $name);
+                        }
+                        else
+                        {
+                            $this->permission($role, $key, $name, $val);
+                        }
+                    }
+                }
+            }
+		}
 	}
 
 	/**
