@@ -381,10 +381,16 @@ abstract class Kohana_Bonafide_ACL {
 	 *     // Get all defined resources
 	 *     $resources = $acl->resources();
 	 *
+	 * @param   bool    whether get the resources associate with actions
 	 * @return  array
 	 */
-	public function resources()
+	public function resources($with_action = FALSE)
 	{
+        if($with_action === TRUE)
+        {
+            return $this->_resources;
+        }
+
 		// Get all defined resources
 		$resources = array_keys($this->_resources);
 
