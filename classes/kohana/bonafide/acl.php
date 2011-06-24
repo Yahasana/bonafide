@@ -95,12 +95,12 @@ abstract class Kohana_Bonafide_ACL {
 	 *      // Configuration array
 	 *      $config = array(
      *
-     *          'resource' => array(
+     *          Bonafide_ACL::RESOURCE => array(
      *              'post'      => array('create', 'publish', 'delete', 'edit', 'view'),
      *              'comment'   => array('create', 'approve', 'delete', 'view'),
      *          ),
      *
-     *          'role' => array(
+     *          Bonafide_ACL::ROLE => array(
      *              'administrator' => array(
      *                  // Allow to do anything
      *                  'resource'  => array()
@@ -159,7 +159,7 @@ abstract class Kohana_Bonafide_ACL {
                 if(empty($roles['resource']))
                 {
                     // Allow to do anything
-                    $this->allow($role);
+                    $this->permission($role, NULL, NULL, TRUE);
                     continue;
                 }
 
@@ -168,7 +168,7 @@ abstract class Kohana_Bonafide_ACL {
                     if(empty($actions))
                     {
                         // Allow to do anything on "$name"
-                        $this->allow($role, NULL, $name);
+                        $this->permission($role, NULL, $name, TRUE);
                         continue;
                     }
 
@@ -177,7 +177,7 @@ abstract class Kohana_Bonafide_ACL {
                         // If no explicit allow option set, allow by default.
                         if(is_int($key))
                         {
-                            $this->allow($role, $val, $name);
+                            $this->permission($role, $val, $name, TRUE);
                         }
                         else
                         {
@@ -594,18 +594,18 @@ abstract class Kohana_Bonafide_ACL {
 		$roles = $actions = $resources = array(Bonafide_ACL::WILDCARD);
 
 		// A specific role or any role
-		array_push($roles, $role);
+		$roles[] = $role;
 
 		if ($action)
 		{
 			// Do a specific action
-			array_push($actions, $action);
+			$actions[] = $action;
 		}
 
 		if ($resource)
 		{
 			// On a specific resource or any resource
-			array_push($resources, $resource);
+			$resources[] = $resource;
 		}
 
 		$allow = FALSE;
