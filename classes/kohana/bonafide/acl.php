@@ -684,7 +684,7 @@ abstract class Kohana_Bonafide_ACL {
 	 *
 	 * @return   array
 	 */
-	public function matrix($resources = NULL)
+	public function matrix($resources = NULL, $role = NULL)
 	{
 		if ($resources)
 		{
@@ -711,7 +711,14 @@ abstract class Kohana_Bonafide_ACL {
 			foreach ($resources as $resource)
 			{
 				// Is it possible to perform "action" on "resource"?
-				$matrix[$resource][$action] = $this->can($action, $resource);
+				if($this->can($action, $resource))
+				{
+                    $matrix[$resource][$action] = $role ? $this->allowed($role, $action, $resource) : TRUE;
+				}
+				else
+				{
+                    $matrix[$resource][$action] = 0;
+                }
 			}
 		}
 
