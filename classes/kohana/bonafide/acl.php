@@ -149,44 +149,7 @@ abstract class Kohana_Bonafide_ACL {
             }
 		}
 
-		if(isset($config[Bonafide_ACL::ROLE]))
-		{
-            foreach($config[Bonafide_ACL::ROLE] as $role => $roles)
-            {
-                // Add new role
-                $this->role($role, isset($roles['parent']) ? $roles['parent'] : NULL);
-
-                if(empty($roles['resource']))
-                {
-                    // Allow to do anything
-                    $this->permission($role, NULL, NULL, TRUE);
-                    continue;
-                }
-
-                foreach($roles['resource'] as $name => $actions)
-                {
-                    if(empty($actions))
-                    {
-                        // Allow to do anything on "$name"
-                        $this->permission($role, NULL, $name, TRUE);
-                        continue;
-                    }
-
-                    foreach($actions as $key => $val)
-                    {
-                        // If no explicit allow option set, allow by default.
-                        if(is_int($key))
-                        {
-                            $this->permission($role, $val, $name, TRUE);
-                        }
-                        else
-                        {
-                            $this->permission($role, $key, $name, $val);
-                        }
-                    }
-                }
-            }
-		}
+		isset($config[Bonafide_ACL::ROLE]) AND $this->roles($config[Bonafide_ACL::ROLE]);
 	}
 
 	/**
@@ -316,20 +279,62 @@ abstract class Kohana_Bonafide_ACL {
 	 *
 	 * [!!] Unlike actions and resources, roles are not sorted!
 	 *
+	 * @param   array   array of roles
 	 * @return  array
 	 */
-	public function roles()
+	public function roles(array $role = NULL)
 	{
-		// Get all defined roles
-		$roles = array_keys($this->_roles);
+        if ($role === NULL)
+        {
+            // Get all defined roles
+            $roles = array_keys($this->_roles);
 
-		if ($roles)
-		{
-			// Create a mirrored array
-			$roles = array_combine($roles, $roles);
-		}
+            if ($roles)
+            {
+                // Create a mirrored array
+                $roles = array_combine($roles, $roles);
+            }
 
-		return $roles;
+            return $roles;
+        }
+
+        foreach ($role as $r => $o)
+        {
+            // Add new role
+            $this->role($r, isset($o['parent']) ? $o['parent'] : NULL);
+
+            if (empty($o['resource']))
+            {
+                // Allow to do anything
+                $this->permission($r, NULL, NULL, TRUE);
+                continue;
+            }
+
+            foreach ($o['resource'] as $name => $actions)
+            {
+                if (empty($actions))
+                {
+                    // Allow to do anything on "$name"
+                    $this->permission($r, NULL, $name, TRUE);
+                    continue;
+                }
+
+                foreach ($actions as $key => $val)
+                {
+                    // If no explicit allow option set, allow by default.
+                    if(is_int($key))
+                    {
+                        $this->permission($r, $val, $name, TRUE);
+                    }
+                    else
+                    {
+                        $this->permission($r, $key, $name, $val);
+                    }
+                }
+            }
+        }
+
+        return $this;
 	}
 
 	/**
@@ -713,11 +718,11 @@ abstract class Kohana_Bonafide_ACL {
 				// Is it possible to perform "action" on "resource"?
 				if($this->can($action, $resource))
 				{
-                    $matrix[$resource][$action] = $role ? $this->allowed($role, $action, $resource) : TRUE;
+                    $matrix[$resource][$action] = $role ? $this->permission($role, $action, $resource, TRUE) : TRUE;
 				}
 				else
 				{
-                    $matrix[$resource][$action] = 0;
+                    $matrix[$resource][$action] = NULL;
                 }
 			}
 		}
