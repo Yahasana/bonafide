@@ -262,9 +262,6 @@ abstract class Kohana_Bonafide_ACL {
 			$actions = array();
 		}
 
-		// Sort alphabetically
-		ksort($actions, SORT_LOCALE_STRING);
-
 		// Create the resource
 		$this->_resources[$name] = $actions;
 
@@ -375,8 +372,6 @@ abstract class Kohana_Bonafide_ACL {
 			}
 		}
 
-		ksort($actions, SORT_LOCALE_STRING);
-
 		return $actions;
 	}
 
@@ -403,9 +398,6 @@ abstract class Kohana_Bonafide_ACL {
 		{
 			// Create a mirrored array
 			$resources = array_combine($resources, $resources);
-
-			// Sort alphabetically
-			ksort($resources, SORT_LOCALE_STRING);
 		}
 
 		return $resources;
