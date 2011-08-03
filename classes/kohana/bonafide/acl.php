@@ -733,4 +733,11 @@ abstract class Kohana_Bonafide_ACL {
 		return $matrix;
 	}
 
+	public function reset()
+	{
+        $this->_roles = $this->_resources = $this->_permissions = array();
+
+        return $this;
+	}
+
 } // End Bonafide_ACL
