@@ -177,7 +177,7 @@ abstract class Kohana_Bonafide_ACL {
 	 */
 	public function name()
 	{
-		return $this->_instance();
+		return $this->_instance;
 	}
 
 	/**
