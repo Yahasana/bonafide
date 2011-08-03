@@ -687,9 +687,11 @@ abstract class Kohana_Bonafide_ACL {
 	 * actions are represented by an "o" and empty space represents an action
 	 * that does not exist for the resource.
 	 *
-	 * @return   array
+	 * @param   string   role name, true / false in the matrix are stood for allowed / denied
+	 * @param   boolean  show / hide the unsupported actions
+	 * @return  array
 	 */
-	public function matrix($resources = NULL, $role = NULL)
+	public function matrix($resources = NULL, $role = NULL, $slim = TRUE)
 	{
 		if ($resources)
 		{
@@ -718,10 +720,11 @@ abstract class Kohana_Bonafide_ACL {
 				// Is it possible to perform "action" on "resource"?
 				if($this->can($action, $resource))
 				{
-                    $matrix[$resource][$action] = $role ? $this->permission($role, $action, $resource, TRUE) : TRUE;
+                    $matrix[$resource][$action] = $role === NULL ? TRUE : $this->allowed($role, $action, $resource);
 				}
-				else
+				elseif ($slim === FALSE)
 				{
+                    // Missing actions will be set as NULL
                     $matrix[$resource][$action] = NULL;
                 }
 			}
